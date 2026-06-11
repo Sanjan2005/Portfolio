@@ -12,11 +12,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let mx = -100, my = -100;
     let rx = -100, ry = -100;
 
-    document.addEventListener('mousemove', (e) => {
-      mx = e.clientX; my = e.clientY;
+    function moveCursorTo(x, y) {
+      mx = x; my = y;
       dot.style.left  = mx + 'px';
       dot.style.top   = my + 'px';
+    }
+
+    // Mouse tracking
+    document.addEventListener('mousemove', (e) => {
+      moveCursorTo(e.clientX, e.clientY);
     });
+
+    // ─── Touch tracking ──────────────────────────────────
+    // On touch devices the cursor elements are hidden via CSS (hover:none + pointer:coarse),
+    // but we still fire position updates so any pointer-dependent logic stays correct.
+    document.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      if (!t) return;
+      moveCursorTo(t.clientX, t.clientY);
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      const t = e.touches[0];
+      if (!t) return;
+      moveCursorTo(t.clientX, t.clientY);
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      // Small delay then fade — mirrors mouseleave behaviour
+      setTimeout(() => {
+        dot.style.opacity  = '0';
+        ring.style.opacity = '0';
+      }, 300);
+    }, { passive: true });
 
     function animateRing() {
       rx += (mx - rx) * 0.12;

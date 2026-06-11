@@ -59,6 +59,9 @@
     }
   }
 
+  // ─── Touch / pointer detection ────────────────────────────
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
   // Hovered node tracking
   let hovered = null;
 
@@ -235,82 +238,143 @@
     requestAnimationFrame(draw);
   }
 
-  // ─── Mouse hover ──────────────────────────────────────────
-  canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const nodes = canvas._allNodes || [];
-    let found = null;
-    for (const n of nodes) {
-      if (mx > n.x - n.pw/2 && mx < n.x + n.pw/2 &&
-          my > n.y - n.ph/2 && my < n.y + n.ph/2) {
-        found = n;
-        break;
+  // ─── Mouse hover (desktop only) ───────────────────────────
+  if (!isTouchDevice) {
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const nodes = canvas._allNodes || [];
+      let found = null;
+      for (const n of nodes) {
+        if (mx > n.x - n.pw/2 && mx < n.x + n.pw/2 &&
+            my > n.y - n.ph/2 && my < n.y + n.ph/2) {
+          found = n;
+          break;
+        }
       }
-    }
-    hovered = found;
-    canvas.style.cursor = found ? 'grab' : 'default';
-  });
+      hovered = found;
+      canvas.style.cursor = found ? 'grab' : 'default';
+    });
 
-  canvas.addEventListener('mouseleave', () => {
-    hovered = null;
-    canvas.style.cursor = 'default';
-  });
+    canvas.addEventListener('mouseleave', () => {
+      hovered = null;
+      canvas.style.cursor = 'default';
+    });
+  }
 
-  // ─── Drag start ───────────────────────────────────────────
-  canvas.addEventListener('mousedown', (e) => {
-    if (!hovered) return;
+  // ─── Drag start (desktop only) ────────────────────────────
+  if (!isTouchDevice) {
+    canvas.addEventListener('mousedown', (e) => {
+      if (!hovered) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
 
-    draggedNode = {
-      label: hovered.label,
-      currentX: mx,
-      currentY: my,
-      dragX: mx,
-      dragY: my,
-      originalX: hovered.originalX,
-      originalY: hovered.originalY,
-      snapStartTime: null
-    };
-    dragStartTime = Date.now();
-    canvas.style.cursor = 'grabbing';
+      draggedNode = {
+        label: hovered.label,
+        currentX: mx,
+        currentY: my,
+        dragX: mx,
+        dragY: my,
+        originalX: hovered.originalX,
+        originalY: hovered.originalY,
+        snapStartTime: null
+      };
+      dragStartTime = Date.now();
+      canvas.style.cursor = 'grabbing';
 
-    document.dispatchEvent(new CustomEvent('skillDragStart', {
-      detail: { label: hovered.label, x: mx, y: my }
-    }));
+      document.dispatchEvent(new CustomEvent('skillDragStart', {
+        detail: { label: hovered.label, x: mx, y: my }
+      }));
 
-    e.preventDefault();
-  });
+      e.preventDefault();
+    });
+  }
 
-  // ─── Drag move ────────────────────────────────────────────
-  document.addEventListener('mousemove', (e) => {
-    if (!draggedNode) return;
-    const rect = canvas.getBoundingClientRect();
-    draggedNode.currentX = e.clientX - rect.left;
-    draggedNode.currentY = e.clientY - rect.top;
-    draggedNode.dragX    = draggedNode.currentX;
-    draggedNode.dragY    = draggedNode.currentY;
-  });
+  // ─── Drag move (desktop only) ─────────────────────────────
+  if (!isTouchDevice) {
+    document.addEventListener('mousemove', (e) => {
+      if (!draggedNode) return;
+      const rect = canvas.getBoundingClientRect();
+      draggedNode.currentX = e.clientX - rect.left;
+      draggedNode.currentY = e.clientY - rect.top;
+      draggedNode.dragX    = draggedNode.currentX;
+      draggedNode.dragY    = draggedNode.currentY;
+    });
+  }
 
-  // ─── Drag end ─────────────────────────────────────────────
-  document.addEventListener('mouseup', (e) => {
-    if (!draggedNode) return;
+  // ─── Drag end (desktop only) ──────────────────────────────
+  if (!isTouchDevice) {
+    document.addEventListener('mouseup', (e) => {
+      if (!draggedNode) return;
 
-    document.dispatchEvent(new CustomEvent('skillDragEnd', {
-      detail: {
-        label: draggedNode.label,
-        x: draggedNode.currentX,
-        y: draggedNode.currentY
+      document.dispatchEvent(new CustomEvent('skillDragEnd', {
+        detail: {
+          label: draggedNode.label,
+          x: draggedNode.currentX,
+          y: draggedNode.currentY
+        }
+      }));
+
+      canvas.style.cursor = hovered ? 'grab' : 'default';
+      // draggedNode persists — snap-back animation in draw() clears it
+    });
+  }
+
+  // ─── Touch: double-tap to open skill panel (mobile) ───────
+  if (isTouchDevice) {
+    let lastTapTime  = 0;
+    let lastTapLabel = null;
+    const DOUBLE_TAP_MS = 350; // max gap between two taps
+
+    canvas.addEventListener('touchend', (e) => {
+      const touch = e.changedTouches[0];
+      if (!touch) return;
+
+      const rect  = canvas.getBoundingClientRect();
+      const tx    = touch.clientX - rect.left;
+      const ty    = touch.clientY - rect.top;
+      const nodes = canvas._allNodes || [];
+
+      // Find tapped node
+      let tappedNode = null;
+      for (const n of nodes) {
+        // Slightly larger hit area for touch (add 8px padding)
+        const pad = 8;
+        if (tx > n.x - n.pw/2 - pad && tx < n.x + n.pw/2 + pad &&
+            ty > n.y - n.ph/2 - pad && ty < n.y + n.ph/2 + pad) {
+          tappedNode = n;
+          break;
+        }
       }
-    }));
 
-    canvas.style.cursor = hovered ? 'grab' : 'default';
-    // draggedNode persists — snap-back animation in draw() clears it
-  });
+      if (!tappedNode) return;
+
+      const now = Date.now();
+      const gap = now - lastTapTime;
+
+      if (gap < DOUBLE_TAP_MS && lastTapLabel === tappedNode.label) {
+        // Double-tap confirmed — fire event for drag-drop.js to handle
+        document.dispatchEvent(new CustomEvent('skillDoubleTap', {
+          detail: { label: tappedNode.label }
+        }));
+        lastTapTime  = 0;
+        lastTapLabel = null;
+        e.preventDefault(); // prevent zoom on double-tap
+      } else {
+        // First tap — highlight the node visually
+        hovered = tappedNode;
+        lastTapTime  = now;
+        lastTapLabel = tappedNode.label;
+        // Clear highlight after a moment
+        setTimeout(() => {
+          if (hovered && hovered.label === tappedNode.label) hovered = null;
+        }, DOUBLE_TAP_MS + 50);
+      }
+    }, { passive: false });
+  }
 
   // ─── Scroll nudge ─────────────────────────────────────────
   window.addEventListener('scroll', () => { scrollOffset += 2; }, { passive: true });

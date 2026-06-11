@@ -1,7 +1,8 @@
 // ============================================================
-//  DRAG & DROP SYSTEM  v3
+//  DRAG & DROP SYSTEM  v4
 //  Fix 4: wider drop zone (detect right 560px of screen)
 //  Fix 5: close (X) button wires up here with smooth out-animation
+//  v4 Mobile: double-tap to open skill panel; drag disabled on touch
 // ============================================================
 
 (function () {
@@ -88,6 +89,11 @@
   const closeBtn      = document.getElementById('skill-panel-close');
   const orbitCanvas   = document.getElementById('orbit-canvas');
 
+  // ─── Touch / pointer detection ────────────────────────────
+  // isTouchDevice is true for phones/tablets; false for desktops with mouse.
+  // We detect once at load; media queries mirror this in CSS.
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
   // Fix 4: drop zone = rightmost 560px of viewport (larger target)
   function getDropZoneLeft() {
     return window.innerWidth - 560;
@@ -107,8 +113,9 @@
     window.dragState.mouseY = e.clientY;
   });
 
-  // ─── Drag Start ───────────────────────────────────────────
+  // ─── Desktop Drag Start ───────────────────────────────────
   document.addEventListener('skillDragStart', (e) => {
+    if (isTouchDevice) return; // touch handled separately
     if (!hasUserInteracted) {
       orbitCanvas && orbitCanvas.classList.add('hint-shown');
       hasUserInteracted = true;
@@ -119,21 +126,31 @@
     window.dragState.draggedSkill = draggedSkill;
   });
 
-  // ─── Drag End ─────────────────────────────────────────────
+  // ─── Desktop Drag End ─────────────────────────────────────
   document.addEventListener('skillDragEnd', (e) => {
+    if (isTouchDevice) return; // touch handled separately
     const skillName = e.detail.label;
-
-    // Fix 4: check against wider drop zone
     const inDropZone = lastMouseX > getDropZoneLeft();
-
     if (inDropZone && skillName) {
       displaySkillDetails(skillName);
     }
-
     isDragging   = false;
     draggedSkill = null;
     window.dragState.isDragging   = false;
     window.dragState.draggedSkill = null;
+  });
+
+  // ─── Mobile: Double-tap on canvas to open skill panel ─────
+  // orbit.js fires a custom 'skillDoubleTap' event with the label.
+  document.addEventListener('skillDoubleTap', (e) => {
+    const skillName = e.detail.label;
+    if (skillName) {
+      displaySkillDetails(skillName);
+      if (!hasUserInteracted) {
+        orbitCanvas && orbitCanvas.classList.add('hint-shown');
+        hasUserInteracted = true;
+      }
+    }
   });
 
   // ─── Display Skill Details ────────────────────────────────
@@ -167,10 +184,12 @@
     panelElement.classList.add('active');
   }
 
+  // Expose for orbit.js mobile tap
+  window.displaySkillDetails = displaySkillDetails;
+
   // ─── Fix 5: Close Button ──────────────────────────────────
   function closePanel() {
     panelElement.classList.remove('active');
-    // panel slides out via CSS transition (opacity + translateX)
   }
 
   if (closeBtn) {
@@ -178,6 +197,12 @@
       e.stopPropagation();
       closePanel();
     });
+    // Touch tap on close button
+    closeBtn.addEventListener('touchend', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      closePanel();
+    }, { passive: false });
   }
 
   // Close on Escape
@@ -197,13 +222,21 @@
     }
   });
 
-  // ─── Responsive: hide panel below 1024px ─────────────────
-  function handleResize() {
-    if (window.innerWidth < 1024) {
-      panelElement.style.display = 'none';
-    } else {
-      panelElement.style.display = '';
+  // Close on touch outside panel (mobile)
+  document.addEventListener('touchend', (e) => {
+    if (!panelElement.contains(e.target) &&
+        !e.target.closest('canvas') &&
+        panelElement.classList.contains('active')) {
+      // Small delay so the panel-open tap itself doesn't immediately re-close
+      setTimeout(closePanel, 50);
     }
+  }, { passive: true });
+
+  // ─── Responsive: hide panel below 1024px — now CSS handles it ─
+  // (Panel repositioning is done in CSS; no JS override needed)
+  function handleResize() {
+    // Panel visibility is now fully handled in CSS (bottom-sheet on mobile)
+    // Nothing to override here
   }
   window.addEventListener('resize', handleResize);
   handleResize();

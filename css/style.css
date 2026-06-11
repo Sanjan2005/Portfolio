@@ -17,9 +17,9 @@
   --gold:        #C9A84C;
   --gold-shine:  #F0D080;
   --gold-dim:    #8A6E2F;
-  --bg:          #0D1014;
-  --bg2:         #111820;
-  --bg3:         #161E24;
+  --bg:          #0A0E12;
+  --bg2:         #0F1720;
+  --bg3:         #141C24;
   --text:        #EEE8E0;
   --text-muted:  #8A9BA8;
   --border:      rgba(201,168,76,0.15);
@@ -40,7 +40,13 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse 120% 60% at 0% 0%,   rgba(108,1,2,0.22)   0%, transparent 55%),
+    radial-gradient(ellipse 80%  50% at 100% 10%, rgba(34,43,49,0.35)  0%, transparent 50%),
+    radial-gradient(ellipse 60%  70% at 50% 100%, rgba(68,1,1,0.18)    0%, transparent 60%),
+    radial-gradient(ellipse 40%  40% at 80% 60%,  rgba(85,102,110,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 80% at 20% 80%,  rgba(108,1,2,0.12)   0%, transparent 65%),
+    linear-gradient(180deg, #0A0E12 0%, #0C1118 40%, #0D1219 70%, #0A0E12 100%);
   color: var(--text);
   overflow-x: hidden;
   cursor: none;
@@ -52,6 +58,12 @@ ul { list-style: none; }
 button { cursor: none; border: none; background: none; font-family: inherit; }
 
 /* ─── CUSTOM CURSOR ──────────────────────────────────────── */
+/* Hidden on touch devices — shown only when a real pointer is present */
+@media (hover: none) and (pointer: coarse) {
+  #cursor-dot, #cursor-ring { display: none !important; }
+  body { cursor: auto; }
+  button { cursor: pointer; }
+}
 #cursor-dot {
   position: fixed;
   width: 8px; height: 8px;
@@ -161,8 +173,7 @@ body:has(button:hover) #cursor-ring {
 section {
   position: relative;
   z-index: 1;
-  /* Semi-transparent so the fixed starfield is visible beneath every section */
-  background: rgba(13, 16, 20, 0.72);
+  background: rgba(10, 14, 18, 0.68);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -210,8 +221,11 @@ section {
 .hero-bg-gradient {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 15% 50%, rgba(108,1,2,0.18) 0%, transparent 70%),
-              radial-gradient(ellipse 40% 40% at 80% 30%, rgba(34,43,49,0.4) 0%, transparent 60%);
+  background:
+    radial-gradient(ellipse 90% 70% at 10% 50%, rgba(108,1,2,0.28)   0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 85% 25%, rgba(34,43,49,0.45)  0%, transparent 60%),
+    radial-gradient(ellipse 35% 60% at 70% 80%, rgba(68,1,1,0.20)    0%, transparent 55%),
+    radial-gradient(ellipse 25% 35% at 30% 20%, rgba(226,34,39,0.07) 0%, transparent 50%);
   pointer-events: none;
 }
 .hero-glow {
@@ -520,7 +534,9 @@ section {
 /* ─── ABOUT ──────────────────────────────────────────────── */
 #about {
   padding: 120px 60px;
-  background: rgba(17, 24, 32, 0.72);
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 50%, rgba(108,1,2,0.14) 0%, transparent 60%),
+    rgba(15, 23, 32, 0.74);
 }
 .about-inner {
   max-width: 1100px;
@@ -621,7 +637,10 @@ section {
 /* ─── SKILLS ─────────────────────────────────────────────── */
 #skills {
   padding: 120px 60px;
-  background: rgba(13, 16, 20, 0.70);
+  background:
+    radial-gradient(ellipse 70% 50% at 100% 0%,   rgba(68,1,1,0.16)    0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 0%   100%,  rgba(34,43,49,0.20)  0%, transparent 55%),
+    rgba(10, 14, 18, 0.72);
   overflow: visible;  /* Fix 3: was overflow:hidden — that clipped the outer orbit ring */
 }
 /* Fix 3b: wider max-width so orbit canvas center isn't squeezed */
@@ -632,7 +651,8 @@ section {
   width: 100%;
   height: 740px;        /* was 600px; outer orbit dia=660+pill+glow need ~720 */
   position: relative;
-  margin-bottom: 40px;  /* reduced from 60px for tighter spacing */
+  margin-top: 36px;     /* room for the hint pill sitting at top: -22px */
+  margin-bottom: 40px;
   overflow: visible;    /* never clip children */
 }
 
@@ -699,7 +719,9 @@ section {
 /* ─── EXPERIENCE ─────────────────────────────────────────── */
 #experience {
   padding: 120px 60px;
-  background: rgba(17, 24, 32, 0.74);
+  background:
+    radial-gradient(ellipse 50% 60% at 100% 50%, rgba(85,102,110,0.12) 0%, transparent 55%),
+    rgba(15, 23, 32, 0.76);
 }
 .exp-inner { max-width: 900px; margin: 0 auto; }
 .timeline {
@@ -792,7 +814,9 @@ section {
 /* ─── PROJECTS ───────────────────────────────────────────── */
 #projects {
   padding: 120px 60px;
-  background: rgba(13, 16, 20, 0.70);
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(108,1,2,0.13) 0%, transparent 60%),
+    rgba(10, 14, 18, 0.72);
 }
 .projects-inner { max-width: 1100px; margin: 0 auto; }
 .projects-grid {
@@ -882,7 +906,10 @@ section {
 /* ─── CERTIFICATIONS ─────────────────────────────────────── */
 #certifications {
   padding: 120px 60px;
-  background: rgba(17, 24, 32, 0.74);
+  background:
+    radial-gradient(ellipse 55% 55% at 80% 30%, rgba(34,43,49,0.25)  0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 10% 70%, rgba(68,1,1,0.12)    0%, transparent 55%),
+    rgba(15, 23, 32, 0.76);
 }
 .certs-inner { max-width: 1100px; margin: 0 auto; }
 .certs-grid {
@@ -952,7 +979,9 @@ section {
 /* ─── CONTACT ────────────────────────────────────────────── */
 #contact {
   padding: 120px 60px 80px;
-  background: rgba(13, 16, 20, 0.72);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(108,1,2,0.18) 0%, transparent 60%),
+    rgba(10, 14, 18, 0.74);
   position: relative;
   overflow: hidden;
 }
@@ -1182,27 +1211,7 @@ footer {
   transform: rotate(90deg) scale(1.1);
 }
 
-/* Drop-zone visual ring hint on canvas */
-#orbit-canvas::after {
-  content: '';
-  position: absolute;
-  /* Fix 4: Wider drop zone ring — covers right 40% of canvas */
-  right: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 200px;
-  height: 280px;
-  border: 2px dashed rgba(201, 168, 76, 0.25);
-  border-radius: 20px;
-  pointer-events: none;
-  opacity: 0;
-  animation: pulseGlowRing 2.5s ease-in-out infinite;
-  z-index: 5;
-}
-#orbit-canvas.hint-shown::after {
-  animation: none;
-  opacity: 0;
-}
+/* drop-zone dashed ring removed — hint pill handles the guidance */
 
 .skill-detail-content {
   animation: slideInFromRight 0.45s var(--ease-smooth);
@@ -1280,12 +1289,12 @@ footer {
 }
 
 #orbit-canvas::before {
-  content: 'Drag a skill to explore details';
+  content: 'Drag a skill right to explore details';
   position: absolute;
-  top: 30px;
+  top: -22px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--gold);
   text-align: center;
   pointer-events: none;
@@ -1294,7 +1303,7 @@ footer {
   z-index: 25;
   opacity: 0.8;
   animation: fadeInScale 0.6s var(--ease-smooth) 0.5s both, floatHint 3s ease-in-out 0.5s infinite;
-  padding: 8px 16px;
+  padding: 8px 18px;
   background: rgba(201, 168, 76, 0.08);
   border: 1px solid rgba(201, 168, 76, 0.25);
   border-radius: 20px;
@@ -1309,22 +1318,7 @@ footer {
   pointer-events: none;
 }
 
-#orbit-canvas::after {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  border: 2px solid var(--gold);
-  border-radius: 20px;
-  pointer-events: none;
-  opacity: 0;
-  animation: pulseGlowRing 2.5s ease-in-out infinite;
-  z-index: 5;
-}
-
-#orbit-canvas.hint-shown::after {
-  animation: none;
-  opacity: 0;
-}
+/* yellow border box removed */
 
 /* ─── ENHANCED MICRO-INTERACTIONS ────────────────────────────── */
 .btn-primary {
@@ -1410,31 +1404,226 @@ section:nth-of-type(5) { animation-delay: 0.4s; }
 section:nth-of-type(6) { animation-delay: 0.5s; }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  #nav { padding: 18px 30px; }
-  #nav.scrolled { padding: 12px 30px; }
-  #hero { padding: 0 30px; }
-  .hero-inner { grid-template-columns: 1fr; gap: 60px; text-align: center; }
-  .hero-text { padding-top: 120px; }
-  .hero-photo-wrap { order: -1; justify-content: center; padding-top: 0; }
-  .hero-photo-frame { width: 260px; height: 320px; }
-  .hero-actions { justify-content: center; }
-  .hero-stats { justify-content: center; }
-  .hero-desc { margin-left: auto; margin-right: auto; }
-  .hero-eyebrow { justify-content: center; }
-  #about, #skills, #experience, #projects, #certifications, #contact { padding: 80px 30px; }
-  .about-grid { grid-template-columns: 1fr; gap: 48px; }
-  .skills-categories { grid-template-columns: 1fr 1fr; }
-  .projects-grid { grid-template-columns: 1fr; }
-  .certs-grid { grid-template-columns: 1fr; }
-  footer { flex-direction: column; gap: 16px; text-align: center; padding: 24px 30px; }
-  .nav-links { gap: 20px; }
+
+/* ── Ultra-wide / Large Desktop (≥ 1600px) ─────────────── */
+@media (min-width: 1600px) {
+  .hero-inner      { max-width: 1400px; grid-template-columns: 1fr 480px; gap: 100px; }
+  .hero-name       { font-size: clamp(4rem, 5.5vw, 7rem); }
+  .hero-photo-frame { width: 380px; height: 460px; }
+  .about-inner, .skills-inner, .exp-inner, .projects-inner, .certs-inner, .contact-inner {
+    max-width: 1400px;
+  }
+  .skills-categories { grid-template-columns: repeat(4, 1fr); }
+  .projects-grid    { grid-template-columns: repeat(2, 1fr); }
+  .certs-grid       { grid-template-columns: repeat(4, 1fr); }
 }
-@media (max-width: 640px) {
+
+/* ── Standard Desktop (1024–1599px) — mostly default, tweaks only ── */
+@media (min-width: 1024px) and (max-width: 1280px) {
+  #nav { padding: 18px 40px; }
+  #nav.scrolled { padding: 12px 40px; }
+  #hero { padding: 0 40px; }
+  .hero-inner { gap: 60px; }
+  .hero-photo-frame { width: 300px; height: 370px; }
+  #about, #skills, #experience, #projects, #certifications, #contact { padding: 100px 40px; }
+  .skills-categories { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Tablet Landscape (768–1023px) ─────────────────────── */
+@media (max-width: 1023px) {
+  /* Nav */
+  #nav { padding: 16px 28px; }
+  #nav.scrolled { padding: 12px 28px; }
+  .nav-links { gap: 18px; }
+  .nav-links a { font-size: 0.72rem; letter-spacing: 0.08em; }
+
+  /* Hero */
+  #hero { padding: 0 28px; }
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    text-align: center;
+  }
+  .hero-text { padding-top: 110px; }
+  .hero-photo-wrap { order: -1; justify-content: center; padding-top: 0; }
+  .hero-photo-frame { width: 240px; height: 295px; }
+  .hero-actions { justify-content: center; }
+  .hero-stats { justify-content: center; gap: 28px; }
+  .hero-desc { margin-left: auto; margin-right: auto; max-width: 480px; }
+  .hero-eyebrow { justify-content: center; }
+
+  /* Sections */
+  #about, #skills, #experience, #projects, #certifications, #contact {
+    padding: 80px 28px;
+  }
+  .about-grid { grid-template-columns: 1fr; gap: 44px; }
+  .about-cards { grid-template-columns: repeat(2, 1fr); }
+
+  /* Skills orbit — scale down canvas on tablet */
+  #orbit-canvas { height: 560px; }
+  .skills-categories { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+  /* Experience */
+  .timeline { padding-left: 28px; }
+  .timeline-dot { left: -32px; }
+  .timeline-card { padding: 22px 24px; }
+  .timeline-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .timeline-period { align-self: flex-start; }
+
+  /* Projects */
+  .projects-grid { grid-template-columns: 1fr; gap: 20px; }
+
+  /* Certifications */
+  .certs-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+  /* Footer */
+  footer { flex-direction: column; gap: 14px; text-align: center; padding: 22px 28px; }
+
+  /* Skill detail panel — hide behind content on tablet, use bottom sheet behaviour */
+  #skill-detail-panel {
+    width: calc(100% - 48px);
+    max-width: 420px;
+    right: 50%;
+    top: auto;
+    bottom: 24px;
+    transform: translateX(50%) translateY(120px);
+    max-height: 60vh;
+  }
+  #skill-detail-panel.active {
+    transform: translateX(50%) translateY(0);
+    top: auto;
+  }
+}
+
+/* ── Tablet Portrait / Large Mobile (540–767px) ─────────── */
+@media (max-width: 767px) {
+  /* Nav */
+  #nav { padding: 14px 20px; }
+  #nav.scrolled { padding: 10px 20px; }
+  .nav-links { gap: 14px; }
+  .nav-links a { font-size: 0.68rem; }
+
+  /* Hero */
+  #hero { padding: 0 20px; }
+  .hero-text { padding-top: 100px; }
+  .hero-photo-frame { width: 200px; height: 248px; }
+  .hero-stats { flex-wrap: wrap; gap: 20px; }
+  .stat-num { font-size: 1.6rem; }
+  .btn-primary, .btn-ghost { padding: 12px 24px; font-size: 0.75rem; }
+
+  /* Sections */
+  #about, #skills, #experience, #projects, #certifications, #contact {
+    padding: 64px 20px;
+  }
+  .section-title { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+
+  /* About */
+  .about-cards { grid-template-columns: 1fr; }
+  .about-edu { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .edu-cgpa { margin-left: 0; }
+
+  /* Skills orbit */
+  #orbit-canvas { height: 420px; }
+  .skills-categories { grid-template-columns: 1fr; gap: 12px; }
+  #orbit-canvas::before { font-size: 0.78rem; }
+
+  /* Projects */
+  .project-card { padding: 24px 20px; }
+  .project-num { font-size: 2.5rem; }
+
+  /* Certifications */
+  .certs-grid { grid-template-columns: 1fr; }
+
+  /* Contact */
+  .contact-links { flex-direction: column; align-items: stretch; }
+  .contact-link { min-width: unset; justify-content: center; }
+
+  /* Timeline */
+  .timeline-company { font-size: 1rem; }
+
+  /* Detail panel stays bottom sheet */
+  #skill-detail-panel {
+    width: calc(100% - 32px);
+    max-width: none;
+    right: 50%;
+    bottom: 16px;
+    max-height: 55vh;
+  }
+}
+
+/* ── Mobile (≤ 480px) ───────────────────────────────────── */
+@media (max-width: 480px) {
   .nav-links { display: none; }
-  .skills-categories { grid-template-columns: 1fr; }
-  .hero-stats { flex-wrap: wrap; gap: 24px; }
-  .contact-links { flex-direction: column; align-items: center; }
+
+  #hero { min-height: 100svh; }
+  .hero-text { padding-top: 90px; }
+  .hero-photo-frame { width: 170px; height: 210px; }
+  .hero-stats { gap: 16px; }
+  .stat-num { font-size: 1.4rem; }
+  .hero-photo-badge { padding: 12px 14px; bottom: -14px; left: -10px; }
+  .badge-text { font-size: 0.68rem; }
+
+  /* Sections */
+  #about, #skills, #experience, #projects, #certifications, #contact {
+    padding: 56px 16px;
+  }
+  .section-title { font-size: clamp(1.4rem, 7vw, 2rem); }
+
+  /* Orbit canvas — compact on small phones */
+  #orbit-canvas { height: 340px; }
+  /* Hide desktop hint text; orbit.js injects its own mobile hint */
+  #orbit-canvas::before { display: none; }
+  #orbit-canvas::after  { display: none; }
+
+  /* Timeline */
+  .timeline { padding-left: 22px; }
+  .timeline-dot { left: -26px; width: 8px; height: 8px; }
+  .timeline-card { padding: 18px 16px; }
+  .timeline-bullets li { font-size: 0.78rem; }
+
+  /* Project */
+  .project-card { padding: 20px 16px; }
+
+  /* Skills categories */
+  .skill-cat { padding: 18px 16px; }
+  .skill-tag { font-size: 0.68rem; }
+
+  /* Detail panel */
+  #skill-detail-panel {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    transform: translateX(0) translateY(100%);
+    max-height: 70vh;
+  }
+  #skill-detail-panel.active {
+    transform: translateX(0) translateY(0);
+    top: auto;
+  }
+
+  /* Footer */
+  footer { padding: 18px 16px; }
+
+  /* Buttons stack on very small */
+  .hero-actions { flex-direction: column; align-items: center; }
+  .btn-primary, .btn-ghost { width: 100%; max-width: 280px; justify-content: center; }
+}
+
+/* ── Mobile hint override — show double-tap hint on touch ── */
+@media (hover: none) and (pointer: coarse) {
+  /* Replace "Drag a skill" hint with "Double-tap" hint via CSS custom property trick */
+  #orbit-canvas::before {
+    content: 'Double-tap a skill to explore details';
+    display: block;
+    font-size: 0.78rem;
+    white-space: normal;
+    text-align: center;
+    padding: 7px 14px;
+  }
+  /* Keep cursor as default everywhere on touch */
+  body, button, a, canvas { cursor: default !important; }
 }
 
 /* Noise texture overlay */
