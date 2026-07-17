@@ -209,18 +209,22 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const el = entry.target;
-        const target = parseFloat(el.dataset.target);
-        const isFloat = el.dataset.target.includes('.');
+        const targetStr = el.dataset.target;
+        const target = parseFloat(targetStr);
+        const decimalPlaces = targetStr.includes('.')
+          ? targetStr.split('.')[1].length
+          : 0;
         const suffix = el.dataset.suffix || '';
         let current = 0;
         const step = target / 50;
         const interval = setInterval(() => {
           current += step;
           if (current >= target) {
-            current = target;
             clearInterval(interval);
+            el.textContent = (decimalPlaces > 0 ? targetStr : String(Math.floor(target))) + suffix;
+          } else {
+            el.textContent = (decimalPlaces > 0 ? current.toFixed(decimalPlaces) : Math.floor(current)) + suffix;
           }
-          el.textContent = (isFloat ? current.toFixed(1) : Math.floor(current)) + suffix;
         }, 30);
         statsObserver.unobserve(el);
       }
